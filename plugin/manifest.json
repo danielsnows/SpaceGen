@@ -1,0 +1,13 @@
+{
+  "name": "Design Feed",
+  "id": "design-feed-plugin",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["https://www.figma.com", "http://localhost:3030"],
+    "reasoning": "Design Feed fetches posts from the aggregator backend and optionally proxies images."
+  }
+}

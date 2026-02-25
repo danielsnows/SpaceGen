@@ -1,0 +1,12 @@
+{
+  "name": "ui-feed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Design Feed – Figma plugin + backend",
+  "scripts": {
+    "dev": "cd backend && npm run dev",
+    "start": "cd backend && npm run start",
+    "build": "cd backend && npm run build && cd ../plugin && npm run build",
+    "build:plugin": "cd plugin && npm run build"
+  }
+}
