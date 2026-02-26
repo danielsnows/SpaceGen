@@ -10,6 +10,7 @@ const proxy = express();
 proxy.use((req, _res, next) => {
   if (typeof req.url === "string" && req.url.startsWith("/api")) {
     req.url = req.url.replace(/^\/api/, "") || "/";
+    if (!req.url.startsWith("/")) req.url = "/" + req.url;
   }
   next();
 });

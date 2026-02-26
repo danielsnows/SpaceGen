@@ -6,13 +6,20 @@ import { imageProxyRouter } from "./routes/image-proxy.js";
 const app = express();
 const PORT = process.env.PORT ?? 3030;
 
-// Para desenvolvimento, liberamos CORS amplo para que o iframe do Figma
-// (que pode ter origin \"null\" ou outra variação) consiga chamar o backend.
-// Em produção, você pode restringir isso para origens específicas.
+// Para desenvolvimento e Figma (iframe com origin "null"), CORS amplo.
+// Preflight OPTIONS precisa ser permitido para o browser enviar GET.
 app.use(
   cors({
-    origin: true, // reflete a origin do request
-    methods: ["GET"],
+    origin: (origin, cb) => {
+      const allowed =
+        origin == null ||
+        origin === "null" ||
+        origin === "" ||
+        origin.startsWith("https://www.figma.com") ||
+        origin.startsWith("http://localhost");
+      cb(null, allowed ? origin || true : false);
+    },
+    methods: ["GET", "OPTIONS"],
   })
 );
 
