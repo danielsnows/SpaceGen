@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-import sharp from "sharp";
 
 export const imageProxyRouter = Router();
 
@@ -90,10 +89,11 @@ imageProxyRouter.get("/", async (req: Request, res: Response) => {
     const arrBuffer = await resp.arrayBuffer();
     const input = Buffer.from(new Uint8Array(arrBuffer));
 
-    // Redimensiona imagens muito grandes para evitar erro "Image is too large" no Figma
+    // Redimensiona imagens muito grandes para evitar erro "Image is too large" no Figma (sharp carregado só aqui para reduzir cold start na Vercel)
     const MAX_DIMENSION = 2000;
-    let output: any = input;
+    let output: Buffer = input;
     try {
+      const { default: sharp } = await import("sharp");
       const img = sharp(input);
       const meta = await img.metadata();
       if (

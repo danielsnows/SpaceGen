@@ -7,7 +7,7 @@
   "editorType": ["figma"],
   "documentAccess": "dynamic-page",
   "networkAccess": {
-    "allowedDomains": ["https://www.figma.com", "http://localhost:3030","https://space-gen-zeta.vercel.app"],
+    "allowedDomains": ["https://www.figma.com", "http://localhost:3030","https://spacegen-ten.vercel.app"],
     "reasoning": "Design Feed fetches posts from the aggregator backend and optionally proxies images."
   }
 }

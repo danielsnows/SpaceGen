@@ -5,6 +5,7 @@
   "framework": null,
   "outputDirectory": "public",
   "functions": {
-    "api/[[...path]].ts": { "memory": 1024, "maxDuration": 30 }
+    "api/[[...path]].ts": { "memory": 1024, "maxDuration": 60 },
+    "api/health.ts": { "memory": 256, "maxDuration": 10 }
   }
 }

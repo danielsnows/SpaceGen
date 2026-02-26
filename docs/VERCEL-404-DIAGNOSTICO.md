@@ -4,13 +4,13 @@ Com **Root Directory = backend** já configurado, um 404 em `/api/health` costum
 
 ## 1. Conferir logs do deploy
 
-1. No dashboard do projeto (**space-gen-zeta**), abra **Deployments**.
+1. No dashboard do projeto (**spacegen-ten**), abra **Deployments**.
 2. Clique no último deployment (Production).
 3. Aba **Building** (Build Logs):
    - Confirme que `npm ci` e `npm run build` terminaram **sem erro**.
    - Se aparecer erro em "Building Serverless Functions" ou ao compilar `api/[[...path]].ts`, a função não sobe e qualquer chamada vira 404.
 4. Aba **Functions** (ou **Runtime Logs**):
-   - Acesse no navegador: `https://space-gen-zeta.vercel.app/api/health`.
+   - Acesse no navegador: `https://spacegen-ten.vercel.app/api/health`.
    - Veja se surge alguma invocação e se há erro (ex.: módulo não encontrado, timeout).
 
 Se o build da função falhar por causa de `../dist/index.js` ou de dependências nativas (ex.: `sharp`), os logs vão mostrar o erro exato.
@@ -25,7 +25,7 @@ Se o build da função falhar por causa de `../dist/index.js` ou de dependência
 
 Foi adicionado em `backend/api/ping.ts` um endpoint que só retorna `{ ok: true }`, sem usar Express nem `dist/`.
 
-- Teste **https://space-gen-zeta.vercel.app/api/ping**. Se responder **200** com `{"ok":true}`, a Vercel está servindo funções; aí o problema está no catch-all (`api/[[...path]].ts`) ou no import de `../dist/index.js`.
+- Teste **https://spacegen-ten.vercel.app/api/ping**. Se responder **200** com `{"ok":true}`, a Vercel está servindo funções; aí o problema está no catch-all (`api/[[...path]].ts`) ou no import de `../dist/index.js`.
 - Se **/api/ping** também der **404**, nenhuma função está sendo exposta: confira Output Directory (vazio), build logs e se o deploy é mesmo deste repositório com Root = backend.
 
 ## 4. Redeploy após mudanças
