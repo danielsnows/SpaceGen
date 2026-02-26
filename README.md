@@ -45,7 +45,23 @@ The plugin UI will request **http://localhost:3030** by default. For a deployed 
 VITE_BACKEND_URL=https://your-backend.example.com npm run build
 ```
 
-Then add `https://your-backend.example.com` to `manifest.json` → `networkAccess` → `allowedDomains`, and rebuild.
+Then add the backend origin (e.g. `https://design-feed-backend.vercel.app`) to `manifest.json` → `networkAccess` → `allowedDomains`, and rebuild.
+
+### Deploy backend (Vercel)
+
+The backend can run on [Vercel](https://vercel.com) (Hobby plan) as serverless functions. Passos detalhados: **[docs/DEPLOY-VERCEL.md](docs/DEPLOY-VERCEL.md)**.
+
+Resumo:
+
+1. Em Vercel: **Add New → Project** → importar o repo → definir **Root Directory** = `backend` → Deploy.
+2. Anotar a URL (ex.: `https://design-feed-backend-xxx.vercel.app`) e testar `https://SUA-URL.vercel.app/api/health`.
+3. Build do plugin com a URL da API (incluindo `/api`):
+   ```bash
+   cd plugin
+   VITE_BACKEND_URL=https://SEU-PROJETO.vercel.app/api npm run build
+   ```
+   Ou use `npm run build:prod` (é obrigatório definir `VITE_BACKEND_URL` antes).
+4. Se a URL do deploy for diferente de `design-feed-backend.vercel.app`, adicione a origem em `manifest.json` → `networkAccess` → `allowedDomains`.
 
 ### 3. Using the plugin
 
@@ -59,6 +75,9 @@ Then add `https://your-backend.example.com` to `manifest.json` → `networkAcces
 
 ```
 backend/
+  api/
+    [[...path]].ts     # Vercel serverless handler (catch-all → Express)
+  vercel.json          # Vercel build and function config
   src/
     config/feeds.ts    # RSS URLs and platform/category defaults
     lib/normalize.ts   # RSS item → Post (per platform)

@@ -25,6 +25,11 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(PORT, () => {
-  console.log(`Design Feed backend running at http://localhost:${PORT}`);
-});
+// Na Vercel, não inicia o servidor; o handler em api/ usa serverless-http.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Design Feed backend running at http://localhost:${PORT}`);
+  });
+}
+
+export { app };
