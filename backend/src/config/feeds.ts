@@ -16,16 +16,6 @@ export const FEEDS: FeedConfig[] = [
     defaultCategory: "Website Awards",
   },
   {
-    url: "https://rss.app/feeds/MRFR9w0KO0T05GbE.xml",
-    platform: "cssdesignawards",
-    defaultCategory: "Website Awards",
-  },
-  {
-    url: "https://rss.app/feeds/cLu4NMxO5P66jjgn.xml",
-    platform: "csswinner",
-    defaultCategory: "Website Awards",
-  },
-  {
     url: "https://rss.app/feeds/hIphKSrF3YpyDbWK.xml",
     platform: "webflow",
     defaultCategory: "Website Inspiration",

@@ -7,7 +7,7 @@ const BACKEND_URL =
     ? String((import.meta.env as Record<string, string>).VITE_BACKEND_URL).replace(/\/$/, "")
     : "http://localhost:3030";
 
-const FETCH_TIMEOUT_MS = 12000;
+const FETCH_TIMEOUT_MS = 18000;
 
 export interface GetPostsParams {
   platform?: string;
@@ -31,10 +31,12 @@ export async function getPosts(params: GetPostsParams = {}): Promise<Post[]> {
     res = await fetchWithTimeout(url, FETCH_TIMEOUT_MS);
   } catch (e) {
     if (e instanceof Error && e.name === "AbortError") {
-      throw new Error("Backend timed out. Run the server (npm run dev in /backend)?");
+      throw new Error(
+        "Backend request timed out. If you're using the cloud backend, try again in a few seconds. For local development, run npm run dev in /backend."
+      );
     }
     throw new Error(
-      "Could not connect to backend. Run in another terminal: cd backend && npm run dev"
+      "Could not connect to backend. Check your configured backend URL (VITE_BACKEND_URL) or, in local development, run cd backend && npm run dev."
     );
   }
   if (!res.ok) throw new Error("Failed to load posts (backend returned " + res.status + ")");
@@ -50,10 +52,12 @@ export async function getMobilePosts(params: Pick<GetPostsParams, "q"> = {}): Pr
     res = await fetchWithTimeout(url, FETCH_TIMEOUT_MS);
   } catch (e) {
     if (e instanceof Error && e.name === "AbortError") {
-      throw new Error("Backend timed out. Run the server (npm run dev in /backend)?");
+      throw new Error(
+        "Backend request timed out. If you're using the cloud backend, try again in a few seconds. For local development, run npm run dev in /backend."
+      );
     }
     throw new Error(
-      "Could not connect to backend. Run in another terminal: cd backend && npm run dev"
+      "Could not connect to backend. Check your configured backend URL (VITE_BACKEND_URL) or, in local development, run cd backend && npm run dev."
     );
   }
   if (!res.ok) throw new Error("Failed to load mobile posts (backend returned " + res.status + ")");
