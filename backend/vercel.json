@@ -1,12 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build && mkdir -p public",
   "installCommand": "npm ci",
   "framework": null,
+  "outputDirectory": "public",
   "functions": {
-    "api/[[...path]].ts": {
-      "memory": 1024,
-      "maxDuration": 30
-    }
+    "api/[[...path]].ts": { "memory": 1024, "maxDuration": 30 }
   }
 }
