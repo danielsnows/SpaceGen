@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { SearchBar } from "./components/SearchBar";
 import { FeedGrid } from "./components/FeedGrid";
-import { getPosts, getMobilePosts, getAllPostsMerged, getImageProxyUrl } from "./lib/api";
+import { getImageProxyUrl } from "./lib/api";
+import { getAllPostsFromJson, getWebPostsFromJson, getMobilePostsFromJson } from "./lib/localPosts";
 import { sendToMain, onMainMessage } from "./lib/postMessage";
 import type { Post } from "./types";
 import type { InsertPostPayload } from "./types";
@@ -26,33 +27,23 @@ export function App() {
     return () => clearTimeout(t);
   }, [search]);
 
-  const fetchPosts = useCallback(async () => {
+  const fetchPosts = useCallback(() => {
     setLoading(true);
     setError(null);
     try {
+      let data: Post[];
       if (activeTab === "all" && platform == null) {
-        const data = await getAllPostsMerged(INITIAL_FEED_LIMIT, searchDebounced || undefined);
-        setPosts(data);
+        data = getAllPostsFromJson(INITIAL_FEED_LIMIT, searchDebounced || undefined);
       } else if (activeTab === "all" && platform != null) {
-        const data = await getPosts({
-          platform,
-          q: searchDebounced || undefined,
-        });
-        setPosts(data);
+        data = getWebPostsFromJson(platform, searchDebounced || undefined);
       } else if (activeTab === "website") {
-        const data = await getPosts({
-          platform: platform ?? undefined,
-          q: searchDebounced || undefined,
-        });
-        setPosts(data);
+        data = getWebPostsFromJson(platform ?? undefined, searchDebounced || undefined);
       } else {
-        const data = await getMobilePosts({
-          q: searchDebounced || undefined,
-        });
-        setPosts(data);
+        data = getMobilePostsFromJson(searchDebounced || undefined);
       }
+      setPosts(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load feed");
+      setError("Failed to load feed");
       setPosts([]);
     } finally {
       setLoading(false);
