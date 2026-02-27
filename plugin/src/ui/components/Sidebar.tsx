@@ -2,6 +2,9 @@ import React, { useState, useCallback } from "react";
 import { PLATFORMS } from "../lib/platforms";
 import { SpaceGenLogo, PlatformIcon } from "./PlatformIcons";
 
+/** Plataformas exibidas na sidebar (Mobile fica só nas tabs da topbar). */
+const SIDEBAR_PLATFORMS = PLATFORMS.filter((p) => p.id !== "mobileapp");
+
 export interface SidebarProps {
   selectedPlatform: string | null;
   onPlatformChange: (platform: string | null) => void;
@@ -98,7 +101,7 @@ export function Sidebar({ selectedPlatform, onPlatformChange, onClearAllFilters 
       </button>
 
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, flex: 1 }}>
-        {PLATFORMS.map((p) => {
+        {SIDEBAR_PLATFORMS.map((p) => {
           const isSelected = selectedPlatform === p.id;
           const isDimmed = selectedPlatform != null && !isSelected;
           return (

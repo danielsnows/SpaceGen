@@ -1,17 +1,17 @@
 import type { Post } from "../types";
 
-// Dados brutos vindos dos JSONs de cada serviço.
-// Importamos diretamente os arquivos JSON existentes em assets/feed-json.
+// Dados vindos dos JSONs gerados por scripts/download-feed-images.mjs
+// (feed-json-built: imagens locais em public/feed-images).
 
-import dribbbleRaw from "../../../../assets/feed-json/dribbble.json";
-import behanceRaw from "../../../../assets/feed-json/behance-net-2026-02-27.json";
-import awwwardsRaw from "../../../../assets/feed-json/awwwards-com-2026-02-27 (1).json";
-import cssDesignAwardsRaw from "../../../../assets/feed-json/cssdesignawards-com-2026-02-27.json";
-import cssWinnerRaw from "../../../../assets/feed-json/csswinner-com-2026-02-27.json";
-import landbookRaw from "../../../../assets/feed-json/landbook.json";
-import framerRaw from "../../../../assets/feed-json/framer.json";
-import onePageLoveRaw from "../../../../assets/feed-json/onepagelove.json";
-import mobileRaw from "../../../../assets/feed-json/mobile.json";
+import dribbbleRaw from "../feed-json-built/dribbble.json";
+import behanceRaw from "../feed-json-built/behance.json";
+import awwwardsRaw from "../feed-json-built/awwwards.json";
+import cssDesignAwardsRaw from "../feed-json-built/cssdesignawards.json";
+import cssWinnerRaw from "../feed-json-built/csswinner.json";
+import landbookRaw from "../feed-json-built/landbook.json";
+import framerRaw from "../feed-json-built/framer.json";
+import onePageLoveRaw from "../feed-json-built/onepagelove.json";
+import mobileRaw from "../feed-json-built/mobile.json";
 
 type RawItem = {
   title: string | null;
@@ -28,9 +28,8 @@ function mapJsonToPosts(
     const title = (item.title ?? "").trim();
     const image = (item.image ?? "").trim();
 
-    // Ignora itens sem imagem ou com imagem inline/base64 (data URL),
-    // que não passam pelo proxy de imagens.
-    if (!image || !image.toLowerCase().startsWith("http")) return;
+    // Ignora itens sem imagem. Aceita URL (http) ou path local (/feed-images/...).
+    if (!image) return;
 
     const id = `${platform}-${index}`;
 
@@ -153,5 +152,11 @@ export function getWebPostsFromJson(
 
 export function getMobilePostsFromJson(q?: string): Post[] {
   return filterByQuery(mobilePosts, q);
+}
+
+/** Todos os posts (web + mobile) por id, para resolver seleção ao adicionar ao Figma independente do feed atual. */
+export function getAllPostsById(): Map<string, Post> {
+  const all = [...webPosts, ...mobilePosts];
+  return new Map(all.map((p) => [p.id, p]));
 }
 

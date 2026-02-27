@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { SearchBar } from "./components/SearchBar";
 import { FeedGrid } from "./components/FeedGrid";
-import { getImageProxyUrl } from "./lib/api";
-import { getAllPostsFromJson, getWebPostsFromJson, getMobilePostsFromJson } from "./lib/localPosts";
+import { getLocalImageUrl, isAbsoluteImageUrl } from "./lib/api";
+import { ensurePngBytes } from "./lib/imageToPng";
+import { getAllPostsFromJson, getWebPostsFromJson, getMobilePostsFromJson, getAllPostsById } from "./lib/localPosts";
+import { getPlatformConfig } from "./lib/platforms";
 import { sendToMain, onMainMessage } from "./lib/postMessage";
 import type { Post } from "./types";
 import type { InsertPostPayload } from "./types";
@@ -55,6 +57,10 @@ export function App() {
   }, [fetchPosts]);
 
   useEffect(() => {
+    document.getElementById("preload-overlay")?.remove();
+  }, []);
+
+  useEffect(() => {
     onMainMessage((msg) => {
       if (msg.type === "INSERT_DONE") {
         setAdding(false);
@@ -86,17 +92,27 @@ export function App() {
   }, []);
 
   const handleAddToCanvas = useCallback(async () => {
-    const selected = posts.filter((p) => selectedIds.has(p.id)).slice(0, ADD_TO_CANVAS_MAX);
+    const allById = getAllPostsById();
+    const selected = Array.from(selectedIds)
+      .slice(0, ADD_TO_CANVAS_MAX)
+      .map((id) => allById.get(id))
+      .filter((p): p is Post => p != null);
     if (selected.length === 0) return;
+    const withUrl = selected.map((p) => ({ post: p, imageUrl: getLocalImageUrl(p.image) }));
+    const valid = withUrl.filter(({ imageUrl }) => isAbsoluteImageUrl(imageUrl));
+    if (valid.length === 0) {
+      setError("Images unavailable in this context. Try opening the plugin from a file or hosted URL.");
+      return;
+    }
+    if (valid.length < selected.length) {
+      setError(`Only ${valid.length} of ${selected.length} image(s) available in this context.`);
+      return;
+    }
     setAdding(true);
     try {
       const payloads: InsertPostPayload[] = [];
-      for (const post of selected) {
-        const imageUrl = getImageProxyUrl(post.image);
-        const res = await fetch(imageUrl);
-        if (!res.ok) throw new Error(`Image failed: ${post.id}`);
-        const buffer = await res.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
+      for (const { post, imageUrl } of valid) {
+        const bytes = await ensurePngBytes(imageUrl);
         payloads.push({
           id: post.id,
           title: post.title,
@@ -110,7 +126,7 @@ export function App() {
       setAdding(false);
       setError(e instanceof Error ? e.message : "Failed to prepare images");
     }
-  }, [posts, selectedIds]);
+  }, [selectedIds]);
 
   return (
     <div
@@ -255,7 +271,9 @@ export function App() {
               position: "relative",
             }}
           >
-            Welcome to SpaceGen
+            {platform
+              ? (getPlatformConfig(platform)?.label ?? platform)
+              : "Welcome to SpaceGen"}
           </h1>
           {error && (
             <div
@@ -275,13 +293,34 @@ export function App() {
               style={{
                 flex: 1,
                 display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
+                gap: 16,
                 color: "var(--figma-color-text-tertiary)",
                 fontSize: 14,
               }}
             >
-              Loading feed…
+              <span>Loading feed…</span>
+              <div
+                style={{
+                  width: 280,
+                  height: 6,
+                  background: "#E5E7EB",
+                  borderRadius: 3,
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: "40%",
+                    background: "#000",
+                    borderRadius: 3,
+                    animation: "preload-shine 1.2s ease-in-out infinite",
+                  }}
+                />
+              </div>
             </div>
           ) : (
             <FeedGrid

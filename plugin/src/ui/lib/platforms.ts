@@ -19,6 +19,7 @@ export const PLATFORMS: PlatformConfig[] = [
   { id: "landbook", label: "Land-Book", brandColor: "#3BAD56" },
   { id: "framer", label: "Framer", brandColor: "#0055FF" },
   { id: "onepagelove", label: "One Page Love", brandColor: "#E31837" },
+  { id: "mobileapp", label: "Mobile", brandColor: "#6366F1" },
 ];
 
 const configById = new Map(PLATFORMS.map((p) => [p.id, p]));

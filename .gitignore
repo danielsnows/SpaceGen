@@ -6,6 +6,9 @@ dist/
 backend/dist/
 plugin/dist/
 
+# Plugin: imagens baixadas por script (embed gera embeddedImages.ts no build)
+plugin/public/feed-images/
+
 # Environment
 .env
 .env.local

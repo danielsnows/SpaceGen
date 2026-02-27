@@ -4,10 +4,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Design Feed</title>
-  <style>html, body { margin: 0; padding: 0; }</style>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; }
+    #preload-overlay {
+      position: fixed;
+      inset: 0;
+      background: #F9FAFB;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 9999;
+      font-family: Inter, sans-serif;
+    }
+    #preload-overlay .preload-title {
+      font-size: 16px;
+      color: #6B7280;
+      font-weight: 500;
+    }
+    #preload-overlay .preload-track {
+      width: 280px;
+      height: 6px;
+      background: #E5E7EB;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    #preload-overlay .preload-fill {
+      height: 100%;
+      width: 40%;
+      background: #000;
+      border-radius: 3px;
+      animation: preload-shine 1.2s ease-in-out infinite;
+    }
+    @keyframes preload-shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+  </style>
 </head>
 <body>
-  <div id="root">Loading Design Feed…</div>
+  <div id="preload-overlay">
+    <span class="preload-title">Loading Design Feed…</span>
+    <div class="preload-track"><div class="preload-fill"></div></div>
+  </div>
+  <div id="root"></div>
   <script type="module" src="/src/ui/main.tsx"></script>
 </body>
 </html>

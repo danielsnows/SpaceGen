@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { Post } from "../types";
 import { getPlatformConfig } from "../lib/platforms";
+import { getLocalImageUrl } from "../lib/api";
 import { PlatformIcon } from "./PlatformIcons";
 
 export interface PostCardProps {
@@ -21,6 +22,7 @@ function chipBackgroundColor(brandColor: string): string {
 
 export function PostCard({ post, selected, onToggle }: PostCardProps) {
   const [imgError, setImgError] = useState(false);
+  const imageUrl = getLocalImageUrl(post.image);
   const platformConfig = getPlatformConfig(post.platform);
   const label = platformConfig?.label ?? post.platform;
   const brandColor = platformConfig?.brandColor ?? "var(--figma-color-text-tertiary)";
@@ -61,9 +63,9 @@ export function PostCard({ post, selected, onToggle }: PostCardProps) {
           position: "relative",
         }}
       >
-        {!imgError && (
+        {!imgError && imageUrl ? (
           <img
-            src={post.image}
+            src={imageUrl}
             alt=""
             style={{
               width: "100%",
@@ -74,8 +76,8 @@ export function PostCard({ post, selected, onToggle }: PostCardProps) {
             loading="lazy"
             onError={() => setImgError(true)}
           />
-        )}
-        {imgError && (
+        ) : null}
+        {(imgError || !imageUrl) && (
           <span
             style={{
               fontSize: 12,

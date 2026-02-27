@@ -1,6 +1,5 @@
 import React from "react";
 import { PostCard } from "./PostCard";
-import { getImageProxyUrl } from "../lib/api";
 import type { Post } from "../types";
 
 export interface FeedGridProps {
@@ -43,7 +42,7 @@ export function FeedGrid({
       {posts.map((post) => (
         <PostCard
           key={post.id}
-          post={{ ...post, image: getImageProxyUrl(post.image) }}
+          post={post}
           selected={selectedIds.has(post.id)}
           onToggle={() => onToggleSelect(post.id)}
         />
