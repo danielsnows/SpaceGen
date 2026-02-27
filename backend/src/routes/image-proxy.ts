@@ -61,6 +61,35 @@ function isAllowedUrl(url: string): boolean {
   }
 }
 
+const IMAGE_FETCH_TIMEOUT_MS = 12000;
+const IMAGE_BODY_READ_TIMEOUT_MS = 15000;
+
+async function fetchWithTimeout(url: string, ms: number): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (compatible; DesignFeed/1.0; +https://github.com/design-feed)",
+        Accept: "image/*",
+      },
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function arrayBufferWithTimeout(resp: Response, ms: number): Promise<ArrayBuffer> {
+  return Promise.race([
+    resp.arrayBuffer(),
+    new Promise<ArrayBuffer>((_, reject) =>
+      setTimeout(() => reject(new Error("Body read timed out")), ms)
+    ),
+  ]);
+}
+
 imageProxyRouter.get("/", async (req: Request, res: Response) => {
   const rawUrl = req.query.url;
   if (typeof rawUrl !== "string" || !rawUrl) {
@@ -72,13 +101,9 @@ imageProxyRouter.get("/", async (req: Request, res: Response) => {
     return;
   }
   try {
-    const resp = await fetch(rawUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (compatible; DesignFeed/1.0; +https://github.com/design-feed)",
-        Accept: "image/*",
-      },
-    });
+    console.log("image-proxy: fetching", rawUrl);
+    const resp = await fetchWithTimeout(rawUrl, IMAGE_FETCH_TIMEOUT_MS);
+    console.log("image-proxy: fetched", rawUrl, resp.status);
     if (!resp.ok) {
       res.status(resp.status).send(resp.statusText);
       return;
@@ -86,13 +111,14 @@ imageProxyRouter.get("/", async (req: Request, res: Response) => {
     const contentType = resp.headers.get("content-type") ?? "image/png";
     res.setHeader("Content-Type", contentType);
     res.setHeader("Cache-Control", "public, max-age=3600");
-    const arrBuffer = await resp.arrayBuffer();
+    const arrBuffer = await arrayBufferWithTimeout(resp, IMAGE_BODY_READ_TIMEOUT_MS);
     const input = Buffer.from(new Uint8Array(arrBuffer));
 
     // Redimensiona imagens muito grandes para evitar erro "Image is too large" no Figma (sharp carregado só aqui para reduzir cold start na Vercel)
     const MAX_DIMENSION = 2000;
     let output: Buffer = input;
     try {
+      console.log("image-proxy: resizing", rawUrl);
       const { default: sharp } = await import("sharp");
       const img = sharp(input);
       const meta = await img.metadata();
@@ -109,12 +135,23 @@ imageProxyRouter.get("/", async (req: Request, res: Response) => {
         });
         output = await resized.toBuffer();
       }
+      console.log("image-proxy: resized", rawUrl);
     } catch (e) {
       console.error("Image resize error:", e);
     }
 
     res.send(output);
   } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      console.error("Image proxy timeout:", rawUrl);
+      res.status(504).json({ error: "Image fetch timed out" });
+      return;
+    }
+    if (err instanceof Error && err.message === "Body read timed out") {
+      console.error("Image proxy body read timeout:", rawUrl);
+      res.status(504).json({ error: "Image fetch timed out" });
+      return;
+    }
     console.error("Image proxy error:", err);
     res.status(502).json({ error: "Failed to fetch image" });
   }
