@@ -110,7 +110,6 @@ export function App() {
           id: post.id,
           title: post.title,
           imageUrl: post.image,
-          url: post.url,
           platform: post.platform,
           imageBytes: bytes,
         });

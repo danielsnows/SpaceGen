@@ -4,7 +4,8 @@ import dribbbleUrl from "../assets/logos/dribbble.svg?url";
 import awwwardsUrl from "../assets/logos/awwwards.svg?url";
 import cssDesignAwardsUrl from "../assets/logos/css-design-awards.svg?url";
 import cssWinnerUrl from "../assets/logos/css-winner.svg?url";
-import webflowUrl from "../assets/logos/webflow.svg?url";
+import behanceUrl from "../assets/logos/behance.svg?url";
+import landbookUrl from "../assets/logos/landbook.svg?url";
 import framerUrl from "../assets/logos/framer_symbol.svg.svg?url";
 import onePageLoveUrl from "../assets/logos/one_page_love_logo.svg?url";
 
@@ -13,9 +14,10 @@ const PLATFORM_LOGO_URLS: Record<string, string> = {
   awwwards: awwwardsUrl,
   cssdesignawards: cssDesignAwardsUrl,
   csswinner: cssWinnerUrl,
-  webflow: webflowUrl,
   framer: framerUrl,
   onepagelove: onePageLoveUrl,
+  behance: behanceUrl,
+  landbook: landbookUrl,
 };
 
 const SPACEGEN_PATH =

@@ -8,7 +8,6 @@ interface InsertPost {
   id: string;
   title: string;
   imageUrl: string;
-  url: string;
   platform: string;
   imageBytes: Uint8Array;
 }
@@ -89,18 +88,6 @@ figma.ui.onmessage = async (msg: { type: string; payload?: { posts: InsertPost[]
         titleNode.fontSize = 14;
         titleNode.name = "Title";
 
-        const linkNode = figma.createText();
-        linkNode.characters = post.url;
-        linkNode.fontSize = 11;
-        linkNode.fills = [{ type: "SOLID", color: { r: 0.2, g: 0.4, b: 0.8 } }];
-        linkNode.name = "Link";
-
-        try {
-          linkNode.setHyperlink({ type: "URL", value: post.url });
-        } catch (e) {
-          linkNode.setPluginData("url", post.url);
-        }
-
         const platformNode = figma.createText();
         platformNode.characters = post.platform;
         platformNode.fontSize = 11;
@@ -126,7 +113,6 @@ figma.ui.onmessage = async (msg: { type: string; payload?: { posts: InsertPost[]
         card.appendChild(rect);
         card.appendChild(titleNode);
         card.appendChild(platformNode);
-        card.appendChild(linkNode);
         // Largura fixa e altura \"Hug contents\" (auto layout vertical)
         card.resizeWithoutConstraints(frameWidth, card.height);
         card.x = xOffset;

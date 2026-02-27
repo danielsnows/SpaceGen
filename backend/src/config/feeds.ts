@@ -1,43 +1,52 @@
 export interface FeedConfig {
-  url: string;
+  /** Substring usada para identificar arquivos CSV dessa plataforma pelo nome. */
+  pattern: string;
   platform: string;
   defaultCategory: string;
 }
 
 export const FEEDS: FeedConfig[] = [
   {
-    url: "https://rss.app/feeds/JR6zem5XI5CryhgJ.xml",
+    pattern: "dribbble-com",
     platform: "dribbble",
     defaultCategory: "UI Design",
   },
   {
-    url: "https://rss.app/feeds/RrhBPP1Ss1L9sRr7.xml",
+    pattern: "awwwards-com",
     platform: "awwwards",
     defaultCategory: "Website Awards",
   },
   {
-    url: "https://rss.app/feeds/hIphKSrF3YpyDbWK.xml",
-    platform: "webflow",
-    defaultCategory: "Website Inspiration",
+    pattern: "cssdesignawards-com",
+    platform: "cssdesignawards",
+    defaultCategory: "Website Awards",
   },
   {
-    url: "https://rss.app/feeds/IZRk0aqGfFA7Ej9S.xml",
+    pattern: "csswinner-com",
+    platform: "csswinner",
+    defaultCategory: "Website Awards",
+  },
+  {
+    pattern: "framer-com",
     platform: "framer",
     defaultCategory: "Website Inspiration",
   },
   {
-    url: "https://rss.app/feeds/FzZAGPvuSjTIwtmp.xml",
-    platform: "onepagelove",
-    defaultCategory: "One Page",
+    pattern: "land-book-com",
+    platform: "landbook",
+    defaultCategory: "Website Inspiration",
   },
-  // Opcional – Behance: criar feed no rss.app e descomentar:
-  // { url: "https://rss.app/feeds/XXXXX.xml", platform: "behance", defaultCategory: "Design" },
+  {
+    pattern: "behance-net",
+    platform: "behance",
+    defaultCategory: "Design",
+  },
 ];
 
 // Feeds específicos para inspiração de Mobile App (aba dedicada no plugin)
 export const MOBILE_FEEDS: FeedConfig[] = [
   {
-    url: "https://rss.app/feeds/Fr3v3xc7Tsm7NJNU.xml",
+    pattern: "Mobile-",
     platform: "mobileapp",
     defaultCategory: "Mobile App",
   },

@@ -5,7 +5,7 @@ const BACKEND_URL =
   import.meta.env &&
   typeof (import.meta.env as Record<string, unknown>).VITE_BACKEND_URL === "string"
     ? String((import.meta.env as Record<string, string>).VITE_BACKEND_URL).replace(/\/$/, "")
-    : "http://localhost:3030";
+    : "https://spacegen-ten.vercel.app";
 
 const FETCH_TIMEOUT_MS = 18000;
 
@@ -79,9 +79,7 @@ export async function getAllPostsMerged(limit: number, q?: string): Promise<Post
     getPosts({ q }),
     getMobilePosts({ q }),
   ]);
-  const merged = [...web, ...mobile].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
+  const merged = [...web, ...mobile];
   return shuffle(merged).slice(0, limit);
 }
 
