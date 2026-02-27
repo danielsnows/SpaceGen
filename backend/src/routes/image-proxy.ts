@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response as ExpressResponse } from "express";
 
 export const imageProxyRouter = Router();
 
@@ -64,7 +64,7 @@ function isAllowedUrl(url: string): boolean {
 const IMAGE_FETCH_TIMEOUT_MS = 12000;
 const IMAGE_BODY_READ_TIMEOUT_MS = 15000;
 
-async function fetchWithTimeout(url: string, ms: number): Promise<Response> {
+async function fetchWithTimeout(url: string, ms: number): Promise<globalThis.Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), ms);
   try {
@@ -81,7 +81,7 @@ async function fetchWithTimeout(url: string, ms: number): Promise<Response> {
   }
 }
 
-function arrayBufferWithTimeout(resp: Response, ms: number): Promise<ArrayBuffer> {
+function arrayBufferWithTimeout(resp: globalThis.Response, ms: number): Promise<ArrayBuffer> {
   return Promise.race([
     resp.arrayBuffer(),
     new Promise<ArrayBuffer>((_, reject) =>
@@ -90,7 +90,7 @@ function arrayBufferWithTimeout(resp: Response, ms: number): Promise<ArrayBuffer
   ]);
 }
 
-imageProxyRouter.get("/", async (req: Request, res: Response) => {
+imageProxyRouter.get("/", async (req: Request, res: ExpressResponse) => {
   const rawUrl = req.query.url;
   if (typeof rawUrl !== "string" || !rawUrl) {
     res.status(400).json({ error: "Missing url query" });
